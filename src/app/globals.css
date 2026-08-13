@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  ::selection {
+    background-color: #c98a3a33;
+  }
+  :focus-visible {
+    outline: 2px solid #3a5a40;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-md bg-ink text-paper px-5 py-2.5 text-sm font-medium hover:bg-signal transition-colors disabled:opacity-40 disabled:pointer-events-none;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-md border border-line bg-transparent px-5 py-2.5 text-sm font-medium hover:border-ink transition-colors disabled:opacity-40 disabled:pointer-events-none;
+  }
+  .card {
+    @apply border border-line rounded-lg bg-white/60 p-6;
+  }
+  .field-label {
+    @apply block text-xs font-semibold uppercase tracking-wide text-muted mb-2;
+  }
+  .field-input {
+    @apply w-full rounded-md border border-line bg-white px-3 py-2 text-sm focus:border-signal transition-colors;
+  }
+}

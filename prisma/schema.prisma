@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// One run of the resume-coaching agent against a resume + JD pair
+model ResumeSession {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  resumeText  String
+  jobTitle    String
+  jobDescText String
+
+  // JSON blobs holding structured agent output (see src/lib/types.ts)
+  gapAnalysis    String? // JSON: GapAnalysis
+  keywordMatch   String? // JSON: KeywordMatch
+  rewrites       String? // JSON: BulletRewrite[]
+  agentTrace     String? // JSON: AgentStep[] - log of the agent's own steps, for transparency
+
+  interviews InterviewSession[]
+}
+
+// One mock-interview run, optionally linked back to a resume session
+model InterviewSession {
+  id              String   @id @default(uuid())
+  createdAt       DateTime @default(now())
+  roleTitle       String
+  jobDescText     String
+  status          String   @default("in_progress") // in_progress | completed
+  resumeSessionId String?
+  resumeSession   ResumeSession? @relation(fields: [resumeSessionId], references: [id])
+
+  questions InterviewQuestion[]
+}
+
+// A single question the interview agent asked (including follow-up probes)
+model InterviewQuestion {
+  id                 String   @id @default(uuid())
+  createdAt          DateTime @default(now())
+  interviewSessionId String
+  interviewSession   InterviewSession @relation(fields: [interviewSessionId], references: [id])
+
+  order        Int
+  question     String
+  questionType String // opening | follow_up | behavioral | technical
+  parentId     String? // if this is a follow-up probe, points to the question it probes
+
+  answerText   String?
+  answerMode   String? // voice | typed
+  feedback     String? // JSON: AnswerFeedback
+  answeredAt   DateTime?
+}
